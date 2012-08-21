@@ -1,37 +1,14 @@
-#define RADIOPIN 9
- 
-#include <string.h>
-#include <util/crc16.h>
-#include <SPI.h>
-const int dataReadyPin = 6;
-const int chipSelectPin = 7;
-char datastring[80];
- float pressure;
-float temperature;
-void read_spi(float &pressure, float &temperature);
-
-void setup() 
-{  
- init_scp();  
-  pinMode(dataReadyPin, INPUT);
-  pinMode(RADIOPIN,OUTPUT);
-}
- 
-void loop() {
- 
- char buf[32];
- itoa(millis(), buf, 10);
-  sprintf(datastring, buf); // Puts the text in the datastring
+void sendText(String text) 
+{
+  text.toCharArray(datastring, 200);
   unsigned int CHECKSUM = gps_CRC16_checksum(datastring);  // Calculates the checksum for this datastring
   char checksum_str[6];
   sprintf(checksum_str, "*%04X\n", CHECKSUM);
   strcat(datastring,checksum_str);
- 
   rtty_txstring (datastring);
-  delay(2000);
+  return;
 }
- 
- 
+
 void rtty_txstring (char * string)
 {
  
@@ -119,4 +96,4 @@ uint16_t gps_CRC16_checksum (char *string)
   }
  
   return crc;
-}    
+}

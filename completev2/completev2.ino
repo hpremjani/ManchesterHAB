@@ -3,14 +3,15 @@
 #include <iostrean.h>
 #include <sstream.h>
 #include <SPI.h>
-
-// Cell Shield
-SoftwareSerial cell(2,3);
-char mobilenumber[] = "07733676867";  // Replace xxxxxxxx with the recipient's mobile number
+#include <util/crc16.h>
 
 // GPS
 SoftwareSerial uart_gps(8, 9);
 TinyGPS gps;
+
+// RADIO
+#define RADIOPIN 9
+char datastring[200];
 
 float pressure;
 float temperature;
@@ -26,8 +27,7 @@ void setup()
   // comes in. If you slow it down, the messages might not be valid and 
   // you will likely get checksum errors.
   Serial.begin(115200);
-  cell.begin(9600);
-  uart_gps.begin(4800);
+  uart_gps.begin(9600);
 
   init_scp();
   Serial.println("Started...waiting");
@@ -40,6 +40,9 @@ void setup()
   Serial.println("GPS Shield QuickStart Example Sketch v12");
   Serial.println("       ...waiting for lock...           ");
   Serial.println("");
+  
+  // Enable radio output
+  pinMode(RADIOPIN,OUTPUT);
 
 
   // give the sensor time to set up:
