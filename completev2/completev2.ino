@@ -1,7 +1,7 @@
 #include <SoftwareSerial.h>
 #include <TinyGPS.h>
-#include<iostrean.h>
-#include<sstream.h>
+#include <iostrean.h>
+#include <sstream.h>
 #include <SPI.h>
 
 // Cell Shield
