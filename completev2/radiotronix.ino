@@ -1,12 +1,14 @@
-void sendText(String text) 
+void sendText(char* buf) 
 {
-  text.toCharArray(datastring, 200);
+  sprintf(datastring, buf); // Puts the text in the datastring
   unsigned int CHECKSUM = gps_CRC16_checksum(datastring);  // Calculates the checksum for this datastring
   char checksum_str[6];
   sprintf(checksum_str, "*%04X\n", CHECKSUM);
   strcat(datastring,checksum_str);
-  rtty_txstring (datastring);
-  return;
+ 
+  rtty_txstring(datastring);
+  Serial.print("Sent: ");
+  Serial.println(datastring);
 }
 
 void rtty_txstring (char * string)
@@ -25,10 +27,10 @@ void rtty_txstring (char * string)
   {
     rtty_txbyte (c);
     c = *string++;
-
-Serial.print("1h"); 
   }
-} 
+}
+ 
+ 
 void rtty_txbyte (char c)
 {
   /* Simple function to sent each bit of a char to 
@@ -53,7 +55,7 @@ void rtty_txbyte (char c)
     else rtty_txbit(0);	
  
     c = c >> 1;
- Serial.print("2h"); 
+ 
   }
  
   rtty_txbit (1); // Stop bit
@@ -77,7 +79,7 @@ void rtty_txbit (int bit)
   //                  delayMicroseconds(3370); // 300 baud
   delayMicroseconds(10000); // For 50 Baud uncomment this and the line below. 
   delayMicroseconds(10150); // For some reason you can't do 20150 it just doesn't work.
- Serial.print("3h"); 
+ 
 }
  
 uint16_t gps_CRC16_checksum (char *string)
@@ -97,3 +99,4 @@ uint16_t gps_CRC16_checksum (char *string)
  
   return crc;
 }
+

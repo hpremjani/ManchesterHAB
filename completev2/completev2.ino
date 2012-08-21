@@ -1,13 +1,12 @@
-#include <SoftwareSerial.h>
-#include <TinyGPS.h>
 #include <iostrean.h>
 #include <sstream.h>
 #include <SPI.h>
 #include <util/crc16.h>
+#include <SoftwareSerial.h>
 
 // GPS
-SoftwareSerial uart_gps(8, 9);
-TinyGPS gps;
+SoftwareSerial GPS(4, 5);
+byte gps_set_sucess = 0 ;
 
 // RADIO
 #define RADIOPIN 9
@@ -15,9 +14,6 @@ char datastring[200];
 
 float pressure;
 float temperature;
-float latitude;
-float longitude;
-void transmit(TinyGPS &gps, float &pressure, float &temperature);
 void read_scp(float &pressure, float &temperature);
 
 void setup()
@@ -26,51 +22,32 @@ void setup()
   // fast because we need to print everything before a new sentence 
   // comes in. If you slow it down, the messages might not be valid and 
   // you will likely get checksum errors.
-  Serial.begin(115200);
-  uart_gps.begin(9600);
+  Serial.begin(9600);
 
   init_scp();
   Serial.println("Started...waiting");
-  for(int i = 0; i < 40; i++)
-  {
-    delay(1000);
-    Serial.println(i + 1);
-  }
-  Serial.println("");
-  Serial.println("GPS Shield QuickStart Example Sketch v12");
-  Serial.println("       ...waiting for lock...           ");
-  Serial.println("");
-  
+  init_gps();
   // Enable radio output
   pinMode(RADIOPIN,OUTPUT);
 
-
   // give the sensor time to set up:
   delay(100);
-  uart_gps.listen();
 }
 
-// This is the main loop of the code. All it does is check for data on 
-// the RX pin of the ardiuno, makes sure the data is valid NMEA sentences, 
-// then jumps to the getgps() function.
 void loop()
 {
-  delay(10000);
-   Serial.println("here1");
+  delay(1000);
+  Serial.println("here1");
+  Serial.flush();
   read_scp(pressure, temperature);
-   Serial.println("here1.5");
-  if(uart_gps.available())     // While there is data on the RX pin...
-  {
-     Serial.println("here2");
-    int c = uart_gps.read();    // load the data into a variable...
-    if(gps.encode(c))      // if there is a new valid sentence...
-    Serial.println("here2.5");
-    {
-      transmit(gps, pressure, temperature);
-   Serial.println("here3");  
-    }
+  Serial.println("here1.5");
+  sendText("Foo");
+  while(GPS.available()) {
+    Serial.write(GPS.read()); 
   }
 }
+
+
 
 
 
