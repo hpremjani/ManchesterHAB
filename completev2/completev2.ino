@@ -9,7 +9,7 @@ SoftwareSerial GPS(4, 5);
 byte gps_set_sucess = 0 ;
 
 // RADIO
-#define RADIOPIN 9
+#define RADIOPIN 2
 char datastring[200];
 
 float pressure;
@@ -23,10 +23,9 @@ void setup()
   // comes in. If you slow it down, the messages might not be valid and 
   // you will likely get checksum errors.
   Serial.begin(9600);
-
+  init_gps();
   init_scp();
   Serial.println("Started...waiting");
-  init_gps();
   // Enable radio output
   pinMode(RADIOPIN,OUTPUT);
 
